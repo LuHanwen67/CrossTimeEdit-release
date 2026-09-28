@@ -1,4 +1,24 @@
-# CrossTimeEdit: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation
+<h1 align="center"><em>CrossTimeEdit</em><br><sub>A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation</sub></h1>
+
+<p align="center">
+Hanwen Lu*, Jun He*, Mingjia Yang, Hao Wei, Jinhao Huang, Yi Lin, and Xiang Zhang<sup>&dagger;</sup><br>
+Sun Yat-sen University<br>
+<sub>* Equal contribution &nbsp; &dagger; Corresponding author</sub>
+</p>
+
+<p align="center">
+<a href="https://luhanwen67.github.io/CrossTimeEdit-release/"><img src="https://img.shields.io/badge/Project-Page-246b96?style=flat-square" alt="Project page"></a>
+<a href="https://huggingface.co/LuHanwen/CrossTimeEdit-LoRA"><img src="https://img.shields.io/badge/Hugging_Face-Model-307c73?style=flat-square" alt="Model weights"></a>
+<a href="https://huggingface.co/datasets/LuHanwen/VIGOR-his-metadata"><img src="https://img.shields.io/badge/Hugging_Face-Dataset-96764d?style=flat-square" alt="Dataset metadata"></a>
+</p>
+
+<p align="center">
+<a href="#abstract">Abstract</a> &middot;
+<a href="#resources">Resources</a> &middot;
+<a href="#quick-start">Quick start</a> &middot;
+<a href="#training">Training</a> &middot;
+<a href="#citation">Citation</a>
+</p>
 
 ## Abstract
 
@@ -15,8 +35,8 @@ street-view generation as editing, using recent street views to constrain
 viewpoint and unchanged appearance and temporal satellite differences as
 change evidence. Starting from FLUX.2 [Klein] 4B, we train CrossTimeEdit through
 supervised fine-tuning (SFT) followed by online reinforcement learning (RL). We
-design three street-view editing criteria---Instruction Alignment (IA),
-Background Preservation (BP), and Quality and Physical Plausibility (QP)---as
+design three street-view editing criteria, Instruction Alignment (IA),
+Background Preservation (BP), and Quality and Physical Plausibility (QP), as
 both RL reward dimensions and evaluation metrics. We optimize this multi-reward
 objective using Within Group Relative Policy Optimization for flow-matching
 models (Flow-GRPO) with Group reward-Decoupled Normalization Policy Optimization
@@ -28,118 +48,155 @@ visual realism, and perceptual quality.
 
 ![CrossTimeEdit teaser](assets/teaser.png)
 
-*VIGOR-his provides paired earlier and recent street and satellite views,
-cross-view consistency screening, broad geographic coverage, and structured
-change annotations for historical street-view generation.*
+*VIGOR-his provides paired earlier and recent street and satellite views, cross-view consistency screening, geographic coverage across 11 cities on three continents, and structured change annotations for historical street-view generation.*
 
-This repository contains the implementation of the main CrossTimeEdit
-experiment, including dataset-construction prompts, two-stage SFT, online RL
-training, inference, and IA/BP/QP evaluation.
+## At a Glance
 
-## Contents
+| VIGOR-his | CrossTimeEdit |
+| :--- | :--- |
+| **43,653** location-level temporal cross-view quadruplets | **FLUX.2 [Klein] 4B** with LoRA adaptation |
+| **11 cities** across **3 continents** | Supervised fine-tuning followed by online RL |
+| Approximately **a decade** between observations | **IA, BP, and QP** rewards with GDPO-normalized Flow-GRPO |
+| Change categories, satellite descriptions, and local editing instructions | **17.12%** improvement over the pretrained baseline across the three editing criteria |
 
-```text
-configs/rl/main.yaml          main Flow-GRPO/GDPO configuration
-patches/                      SFT patch for DiffSynth-Studio
-prompts/                      construction and evaluation prompts
-scripts/                      SFT and RL launch scripts
-inference/generate.py         panorama generation
-evaluation/editing_vlm.py     IA, BP, and QP evaluation
-third_party/flow_factory/     minimal main-experiment RL source
+## Resources
+
+| Resource | Release |
+| :--- | :--- |
+| Project page | [Figures, tables, and method overview](https://luhanwen67.github.io/CrossTimeEdit-release/) |
+| Model weights | [CrossTimeEdit LoRA](https://huggingface.co/LuHanwen/CrossTimeEdit-LoRA), selected epoch-200 checkpoint |
+| Dataset metadata | [VIGOR-his](https://huggingface.co/datasets/LuHanwen/VIGOR-his-metadata), including panorama identifiers and experiment splits |
+
+> Google Maps and Street View imagery is **not redistributed**. Image acquisition remains subject to the provider's terms and availability. The released LoRA requires the base model, which must be obtained separately under its applicable terms.
+
+## Quick Start
+
+### 1. Set up the environment
+
+Use Linux, Python 3.10 or 3.11, and a CUDA-compatible PyTorch installation.
+
+```bash
+git clone https://github.com/LuHanwen67/CrossTimeEdit-release.git
+cd CrossTimeEdit-release
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-## External files
+Install the PyTorch build appropriate for your CUDA version **inside this environment**, then run:
 
-Large artifacts are not stored in Git. Place them at the paths referenced by
-`configs/rl/main.yaml`, or update those paths locally:
-
-```text
-models/FLUX.2-klein-base-4B/
-weights/sft/v3_e9_lora/
-data/rl/streetview_change_gt/
+```bash
+bash scripts/setup_sft.sh
+pip install -e third_party/flow_factory
+pip install -r environment/requirements-evaluation.txt
+pip install huggingface_hub
 ```
 
-The CrossTimeEdit LoRA and VIGOR-his metadata are released separately:
-
-```text
-https://huggingface.co/LuHanwen/CrossTimeEdit-LoRA
-https://huggingface.co/datasets/LuHanwen/VIGOR-his-metadata
-```
-
-Download the released weights and metadata with:
+### 2. Download the release
 
 ```bash
 hf download LuHanwen/CrossTimeEdit-LoRA crosstimeedit.safetensors --local-dir weights
 hf download LuHanwen/VIGOR-his-metadata --repo-type dataset --local-dir data
 ```
 
-Google Maps and Street View imagery is not redistributed.
+Place the base-model files and legally obtained images in the following structure. Image filenames must match the relative paths in the manifests.
 
-## Installation
-
-Use Python 3.10 or 3.11 on Linux and install a CUDA-compatible PyTorch build.
-
-```bash
-bash scripts/setup_sft.sh
-source .venv/bin/activate
-pip install -e third_party/flow_factory
-pip install -r environment/requirements-evaluation.txt
+```text
+models/FLUX.2-klein-base-4B/
+data/
+  metadata.jsonl
+  manifests/
+    train.json
+    val.json
+    test.json
+  images/
+weights/
+  crosstimeedit.safetensors
 ```
 
-## SFT
+### 3. Generate historical street views
 
-```bash
-export MODEL_BASE=models/FLUX.2-klein-base-4B
-export DATA_ROOT=data/images
-export SFT_MANIFEST=data/manifests/sft_train.jsonl
-export CUDA_VISIBLE_DEVICES=0,1,2,3
-bash scripts/train_sft_phase1.sh
-bash scripts/train_sft_phase2.sh
-```
-
-The scripts reproduce the reported two-stage LoRA training with four processes,
-LoRA rank 32, and 512 x 1024 panoramas.
-
-## Online RL
-
-```bash
-export GEMINI_API_KEY=your_key
-export GEMINI_BASE_URL=https://generativelanguage.googleapis.com
-bash scripts/train_rl.sh
-```
-
-The main configuration uses Flow-GRPO with GDPO reward normalization and
-independent IA, BP, and QP rewards weighted by 0.45, 0.30, and 0.25.
-
-## Inference
-
-Run one process per GPU. For rank 0 in a four-GPU job:
+Single-GPU inference:
 
 ```bash
 python inference/generate.py \
-  --gpu 0 --rank 0 --world-size 4 \
+  --gpu 0 --rank 0 --world-size 1 \
   --manifest data/manifests/test.json \
-  --data-root data/images \
+  --data-root data \
   --base-model models/FLUX.2-klein-base-4B \
   --lora weights/crosstimeedit.safetensors \
   --output-dir outputs/test
 ```
 
-Use ranks 1-3 for the remaining GPUs.
+For multiple GPUs, run one process per GPU with the same `--world-size` and distinct `--gpu` and `--rank` values.
 
-## Evaluation
+### 4. Evaluate outputs
+
+Set `GEMINI_API_KEY` in your environment, then run:
 
 ```bash
 python evaluation/editing_vlm.py \
   --name CrossTimeEdit \
   --manifest data/manifests/test.json \
-  --data-root data/images \
+  --data-root data \
   --image-dir outputs/test \
   --output outputs/editing_scores.jsonl
 ```
 
-Set `GEMINI_API_KEY` before running the evaluator. Credentials must never be
-written into source files or committed to Git.
+The editing protocol evaluates **Instruction Alignment (IA)**, **Background Preservation (BP)**, and **Quality and Physical Plausibility (QP)**.
+
+## Training
+
+<details>
+<summary><strong>Supervised fine-tuning</strong></summary>
+
+Prepare the SFT JSONL manifest for the patched DiffSynth-Studio training loader. The released split JSON files define split membership; they are not the SFT loader's JSONL input.
+
+```bash
+export MODEL_BASE="$(pwd)/models/FLUX.2-klein-base-4B"
+export DATA_ROOT="$(pwd)/data"
+export SFT_MANIFEST="$(pwd)/data/manifests/sft_train.jsonl"
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+bash scripts/train_sft_phase1.sh
+bash scripts/train_sft_phase2.sh
+```
+
+The launch scripts use four processes, LoRA rank 32, and 512 x 1024 panoramas.
+
+</details>
+
+<details>
+<summary><strong>Online reinforcement learning</strong></summary>
+
+Prepare the SFT initialization and RL data at the paths in [the main configuration](configs/rl/main.yaml), or update the configuration to match your local layout.
+
+```text
+weights/sft/v3_e9_lora/
+data/rl/streetview_change_gt/
+```
+
+Set `GEMINI_API_KEY` in your environment, then launch:
+
+```bash
+export GEMINI_BASE_URL=https://generativelanguage.googleapis.com
+bash scripts/train_rl.sh
+```
+
+The configuration uses Flow-GRPO with GDPO normalization and IA/BP/QP reward weights of **0.45 / 0.30 / 0.25**.
+
+</details>
+
+## Repository Guide
+
+| Path | Purpose |
+| :--- | :--- |
+| [`configs/rl/main.yaml`](configs/rl/main.yaml) | Main Flow-GRPO/GDPO configuration |
+| [`prompts/`](prompts/) | Dataset-construction and evaluation prompts |
+| [`scripts/`](scripts/) | Environment setup and SFT/RL launch scripts |
+| [`patches/`](patches/) | DiffSynth-Studio SFT patch |
+| [`inference/generate.py`](inference/generate.py) | Historical panorama generation |
+| [`evaluation/editing_vlm.py`](evaluation/editing_vlm.py) | IA/BP/QP evaluation |
+| [`third_party/flow_factory/`](third_party/flow_factory/) | Main-experiment RL implementation |
+| [`site/`](site/) | Project-page source |
 
 ## Citation
 

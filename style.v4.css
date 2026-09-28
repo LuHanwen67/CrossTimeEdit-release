@@ -16,8 +16,8 @@ nav { display:flex; gap:26px; font-size:14px; }
 nav a { color:var(--muted); }
 nav a:hover { color:var(--accent); }
 .hero { padding:60px 0 46px; text-align:center; }
-h1 { font-family:"Comic Sans MS","Comic Sans",cursive; font-size:72px; line-height:1.12; margin:0 0 24px; font-weight:700; }
-h1 em { color:#245577; font-style:normal; -webkit-text-stroke:3px #fff; paint-order:stroke fill; text-shadow:0 0 7px #24557780,0 0 16px #24557766,0 0 30px #2455774d; }
+h1 { font-size:72px; line-height:1.12; margin:0 0 24px; font-weight:800; }
+h1 em { color:#245577; }
 .subtitle { max-width:1010px; margin:0 auto 26px; font-size:29px; line-height:1.45; }
 .authors { margin:0 auto; max-width:1030px; font-size:18px; line-height:1.9; }
 .authors span { display:inline-block; margin:0 8px; white-space:nowrap; }

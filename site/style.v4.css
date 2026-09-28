@@ -4,7 +4,7 @@ html { scroll-behavior:smooth; scroll-padding-top:90px; }
 body { margin:0; background:var(--paper); color:var(--ink); font:17px/1.8 "Segoe UI",Arial,sans-serif; }
 body { isolation:isolate; }
 .map-backdrop { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
-.map-backdrop::before { content:""; position:absolute; inset:-240px; opacity:.13; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480' fill='none'%3E%3Cg stroke='%23749aab' stroke-width='1.5'%3E%3Cpath d='M0 112H480M0 124H480M168 0V480M180 0V480M0 354H480M0 366H480M390 0V480M402 0V480'/%3E%3Cpath d='M32 30h86v48H32zM214 24h54v58h-54zM296 38h62v44h-62zM34 160h88v68H34zM50 258h72v60H50zM218 162h52v104h-52zM296 164h62v54h-62zM298 252h60v66h-60zM32 404h90v46H32zM218 404h140v42H218zM430 162h30v156h-30z'/%3E%3C/g%3E%3Cg stroke='%235f9c85' stroke-width='1.5'%3E%3Cpath d='M230 286h28v32h-28zM430 34h30v46h-30zM430 404h30v42h-30z'/%3E%3C/g%3E%3C/svg%3E"); background-size:480px 480px; animation:map-drift 56s ease-in-out infinite alternate; will-change:transform; }
+.map-backdrop::before { content:""; position:absolute; inset:-240px; opacity:.15; background-image:url("assets/city-lineart.svg"); background-size:560px 320px; animation:map-drift 22s linear infinite alternate; will-change:transform; }
 @keyframes map-drift { from { transform:translate3d(-35px,-25px,0); } to { transform:translate3d(65px,45px,0); } }
 a { color:var(--accent); text-decoration:none; }
 a:hover { text-decoration:underline; }
@@ -66,7 +66,7 @@ footer { padding:28px 0; display:flex; justify-content:space-between; color:var(
 @media(max-width:850px) { .method-steps { grid-template-columns:1fr; } h1 { font-size:60px; } .subtitle { font-size:25px; } }
 @media(max-width:600px) {
 .wrap { width:calc(100% - 32px); } body { font-size:16px; }
-.map-backdrop::before { background-size:360px 360px; opacity:.1; }
+.map-backdrop::before { background-size:420px 240px; opacity:.12; }
 .topbar { padding:12px 16px; flex-direction:column; gap:8px; position:static; }
 nav { gap:16px; font-size:12px; flex-wrap:wrap; justify-content:center; }
 .hero { padding:34px 0 30px; } h1 { font-size:40px; margin-bottom:18px; } .subtitle { font-size:21px; }

@@ -1,100 +1,79 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CrossTimeEdit</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="CrossTimeEdit and VIGOR-his: a decade-spanning cross-view dataset and reward-guided editing for historical street-view generation.">
+<title>CrossTimeEdit</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#top">CrossTimeEdit</a>
-    <nav aria-label="Primary navigation">
-      <a href="#method">Method</a>
-      <a href="#dataset">Dataset</a>
-      <a href="#results">Results</a>
-      <a href="#citation">Citation</a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero wrap">
-      <p class="eyebrow">Historical street-view generation</p>
-      <h1>CrossTimeEdit</h1>
-      <p class="subtitle">A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation</p>
-      <p class="authors"><strong>Hanwen Lu</strong><sup>*</sup>, Jun He<sup>*</sup>, Mingjia Yang, Hao Wei, Jinhao Huang, Yi Lin, and Xiang Zhang<sup>†</sup></p>
-      <p class="affiliation"><sup>1</sup> Sun Yat-sen University</p>
-      <p class="notes"><sup>*</sup> Equal contribution &nbsp;&nbsp; <sup>†</sup> Corresponding author</p>
-      <div class="actions">
-        <a class="button primary" href="https://arxiv.org/" aria-label="arXiv preprint coming soon">ArXiv <span>↗</span></a>
-        <a class="button" href="https://github.com/LuHanwen67/CrossTimeEdit-release">Code <span>↗</span></a>
-        <a class="button" href="#resources">Resources <span>↓</span></a>
-      </div>
-    </section>
-
-    <section class="visual wrap">
-      <img src="assets/teaser.png" alt="Overview of the VIGOR-his dataset and CrossTimeEdit">
-      <p class="caption">VIGOR-his pairs earlier and recent cross-view observations and provides structured change annotations for historical street-view generation.</p>
-    </section>
-
-    <section class="section wrap" id="abstract">
-      <div class="section-label">01 / Abstract</div>
-      <div class="section-body prose">
-        <p>Historical street-view imagery records urban evolution, but uneven coverage leaves substantial gaps in historical records. Generating plausible past appearances requires restoring changed structures while preserving persistent scene content.</p>
-        <p>We construct <strong>VIGOR-his</strong>, a decade-spanning cross-view dataset containing 43,653 location-level quadruplets across 11 cities on three continents. Based on VIGOR-his, we propose <strong>CrossTimeEdit</strong>, a model that reformulates historical street-view generation as editing, using recent street views to constrain viewpoint and unchanged appearance and temporal satellite differences as change evidence.</p>
-        <p>CrossTimeEdit improves overall performance across three street-view editing criteria by 17.12% over the pretrained baseline, ranks first among evaluated open-source image editing models, and outperforms cross-view generation models in scene consistency, visual realism, and perceptual quality.</p>
-      </div>
-    </section>
-
-    <section class="section wrap" id="method">
-      <div class="section-label">02 / Method</div>
-      <div class="section-body grid-3">
-        <article><span class="number">01</span><h2>Edit with recent views</h2><p>Recent street views provide a visual reference that constrains viewpoint and persistent scene appearance.</p></article>
-        <article><span class="number">02</span><h2>Describe temporal change</h2><p>Satellite differences provide change evidence and local editing instructions for the earlier scene.</p></article>
-        <article><span class="number">03</span><h2>Optimize three criteria</h2><p>Instruction Alignment, Background Preservation, and Quality and Physical Plausibility guide training and evaluation.</p></article>
-      </div>
-    </section>
-
-    <section class="section wrap" id="dataset">
-      <div class="section-label">03 / Dataset</div>
-      <div class="section-body dataset-panel">
-        <div><p class="metric">43,653</p><p>location-level quadruplets</p></div>
-        <div><p class="metric">11</p><p>cities</p></div>
-        <div><p class="metric">3</p><p>continents</p></div>
-        <div><p class="metric">~10 years</p><p>temporal span</p></div>
-      </div>
-    </section>
-
-    <section class="section wrap" id="results">
-      <div class="section-label">04 / Results</div>
-      <div class="section-body result-list">
-        <div><strong>17.12%</strong><span>overall improvement over the pretrained FLUX.2 [Klein] 4B baseline</span></div>
-        <div><strong>IA / QP</strong><span>highest performance among the evaluated open-source image editing models</span></div>
-        <div><strong>CV-C / CV-VR / CV-PQ</strong><span>stronger scene consistency, visual realism, and perceptual quality than cross-view generation models</span></div>
-      </div>
-    </section>
-
-    <section class="section wrap" id="resources">
-      <div class="section-label">05 / Resources</div>
-      <div class="section-body resources">
-        <a href="https://github.com/LuHanwen67/CrossTimeEdit-release"><span>Code</span><small>GitHub release</small></a>
-        <a href="#"><span>Model weights</span><small>Hugging Face, coming soon</small></a>
-        <a href="#"><span>VIGOR-his metadata</span><small>Hugging Face, coming soon</small></a>
-        <a href="https://arxiv.org/"><span>Paper</span><small>arXiv, coming soon</small></a>
-      </div>
-    </section>
-
-    <section class="section wrap" id="citation">
-      <div class="section-label">06 / Citation</div>
-      <div class="section-body citation"><pre><code>@misc{lu2026crosstimeedit,
+<header class="topbar"><a class="brand" href="#top"><em>CrossTimeEdit</em></a><nav aria-label="Primary navigation"><a href="#abstract">Abstract</a><a href="#dataset">VIGOR-his</a><a href="#method">CrossTimeEdit</a><a href="#results">Results</a></nav></header>
+<main id="top">
+<section class="hero wrap">
+<h1><em>CrossTimeEdit</em></h1>
+<p class="subtitle"><strong>A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation</strong></p>
+<p class="authors">Hanwen Lu<sup>*</sup>, Jun He<sup>*</sup>, Mingjia Yang, Hao Wei, Jinhao Huang, Yi Lin, and Xiang Zhang<sup>†</sup></p>
+<p class="affiliation">Sun Yat-sen University</p><p class="notes"><sup>*</sup> Equal contribution &nbsp;&nbsp; <sup>†</sup> Corresponding author</p>
+<div class="actions"><span class="button unavailable" aria-disabled="true">arXiv (coming soon)</span><a class="button primary" href="https://github.com/LuHanwen67/CrossTimeEdit-release">Code</a><a class="button" href="#resources">Resources</a></div>
+</section>
+<section class="section wrap" id="abstract"><h2>Abstract</h2><div class="prose"><p>Historical street-view imagery records urban evolution, but uneven coverage leaves substantial gaps in historical records. Generating plausible past appearances requires restoring changed structures while preserving persistent scene content. We construct VIGOR-his, a decade-spanning cross-view dataset containing 43,653 location-level quadruplets across 11 cities on three continents. Its automated pipeline performs spatial pairing, consistency screening, change classification, and the generation and validation of satellite-based change descriptions and local editing instructions. Based on VIGOR-his, we propose CrossTimeEdit, a model that reformulates historical street-view generation as editing, using recent street views to constrain viewpoint and unchanged appearance and temporal satellite differences as change evidence. Starting from FLUX.2 [Klein] 4B, we train CrossTimeEdit through supervised fine-tuning (SFT) followed by online reinforcement learning (RL). We design three street-view editing criteria, namely Instruction Alignment (IA), Background Preservation (BP), and Quality and Physical Plausibility (QP), as both RL reward dimensions and evaluation metrics. We optimize this multi-reward objective using Within Group Relative Policy Optimization for flow-matching models (Flow-GRPO) with Group reward-Decoupled Normalization Policy Optimization (GDPO), which normalizes each reward dimension before aggregation. CrossTimeEdit improves overall performance across the three editing criteria by 17.12% over the pretrained baseline and outperforms cross-view generation models in scene consistency, visual realism, and perceptual quality. The implementation code, dataset, and model weights are available at <a href="https://github.com/LuHanwen67/CrossTimeEdit-release">our public repository</a>.</p></div><figure id="figure-1"><a href="assets/figure1.webp" target="_blank" rel="noopener" aria-label="Open Figure 1 at full resolution"><img width="3000" height="1179" src="assets/figure1.webp" alt="Comparison with existing cross-view datasets. VIGOR-his dataset provides four features to our CrossTimeEdit: (1) paired earlier and recent street and satellite views spanning approximately a decade; (2) acquisition-period matching and Gemini-based screening for cross-view scene consistency; (3) geographic coverage across 11 cities on three continents; and (4) change categories, satellite-based change descriptions, and local editing instructions, supporting historical street-view generation from cross-view change evidence." fetchpriority="high"></a><figcaption><em><strong>Figure 1.</strong> Comparison with existing cross-view datasets. VIGOR-his dataset provides four features to our CrossTimeEdit: (1) paired earlier and recent street and satellite views spanning approximately a decade; (2) acquisition-period matching and Gemini-based screening for cross-view scene consistency; (3) geographic coverage across 11 cities on three continents; and (4) change categories, satellite-based change descriptions, and local editing instructions, supporting historical street-view generation from cross-view change evidence.</em></figcaption></figure></section>
+<section class="section wrap" id="dataset"><h2>VIGOR-his</h2>
+<div class="prose"><p>VIGOR-his provides <strong>43,653 location-level cross-view quadruplets</strong> across <strong>11 cities on three continents</strong>, pairing earlier and recent street and satellite views approximately a decade apart. Change categories, satellite-based change descriptions, and local editing instructions support historical street-view generation and location-level urban spatio-temporal analysis.</p></div>
+<div class="table-block" id="table-1"><p class="table-caption" id="table-1-caption"><em><strong>Table 1.</strong> Comparison with related cross-view and temporal datasets. ✓: provided; ✗: not provided in the cited release.</em></p><div class="table-scroll" role="region" aria-labelledby="table-1-caption" tabindex="0"><table><thead><tr><th scope="col">Dataset</th><th scope="col">Cross-view<br>pairing</th><th scope="col">Temporal<br>street views</th><th scope="col">Temporal<br>satellite views</th><th scope="col">Cross-view<br>time alignment</th><th scope="col">Text<br>modality</th><th scope="col">Continents</th><th scope="col">Size</th></tr></thead><tbody><tr><th scope="row">CVUSA</th><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>1</td><td>44,416 pairs</td></tr>
+<tr><th scope="row">CVACT</th><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>1</td><td>128,334 pairs</td></tr>
+<tr><th scope="row">VIGOR</th><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>1</td><td>105,214 panoramas</td></tr>
+<tr><th scope="row">CVGlobal</th><td>✓</td><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>6</td><td>134,233 pairs</td></tr>
+<tr><th scope="row">CV-Cities</th><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>6</td><td>223,736 pairs</td></tr>
+<tr><th scope="row">VIGOR++</th><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>1</td><td>91,498 sequence pairs</td></tr>
+<tr><th scope="row">CityPulse</th><td>✗</td><td>✓</td><td>✗</td><td>✗</td><td>✗</td><td>1</td><td>757 time series</td></tr>
+<tr class="ours"><th scope="row"><strong>VIGOR-his</strong></th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td><strong>3</strong></td><td><strong>43,653 quadruplets</strong></td></tr>
+</tbody></table></div></div>
+<figure id="figure-2"><a href="assets/figure2.webp" target="_blank" rel="noopener" aria-label="Open Figure 2 at full resolution"><img width="3000" height="1512" src="assets/figure2.webp" alt="VIGOR-his dataset construction pipeline, including data preprocessing, viewpoint screening and change classification, cross-view and temporal consistency screening, satellite-based change description generation, local editing instruction generation, and instruction consistency validation. Temporal satellite differences guide instructions describing the earlier states of changed regions, while recent street views anchor viewpoint and unchanged appearance." loading="lazy"></a><figcaption><em><strong>Figure 2.</strong> VIGOR-his dataset construction pipeline, including data preprocessing, viewpoint screening and change classification, cross-view and temporal consistency screening, satellite-based change description generation, local editing instruction generation, and instruction consistency validation. Temporal satellite differences guide instructions describing the earlier states of changed regions, while recent street views anchor viewpoint and unchanged appearance.</em></figcaption></figure>
+<div class="stages"><article><span class="stage-label">Stage 1</span><h3>Data collection and pre-processing</h3><p>Collect earlier and recent observations, pair images using panorama identifiers, capture times, and GPS coordinates, and align panoramas to a common north-facing convention.</p></article>
+<article><span class="stage-label">Stage 2</span><h3>Change classification and consistency screening</h3><p>Screen viewpoint alignment, classify building and road changes, and retain quadruplets that pass the applicable cross-view and temporal consistency checks.</p></article>
+<article><span class="stage-label">Stage 3</span><h3>Satellite-grounded instruction generation</h3><p>Describe temporal satellite changes along four viewing directions and translate them into local instructions specifying earlier states and unchanged content.</p></article>
+<article><span class="stage-label">Stage 4</span><h3>Instruction validation</h3><p>Validate instructions against paired street views to check whether requested edits agree with earlier observations and preserve unchanged regions.</p></article></div>
+<figure id="figure-6"><a href="assets/figure6.webp" target="_blank" rel="noopener" aria-label="Open Figure 6 at full resolution"><img width="3000" height="2455" src="assets/figure6.webp" alt="Representative VIGOR-his samples and their complete local editing instructions. Each sample contains a temporal cross-view quadruplet of co-located earlier/recent satellite images and street-view panoramas. From top to bottom, the examples cover no change (two locations), building changes, road changes, and combined building and road changes. The instructions organize the panorama by viewing direction and specify region-level `MODIFY' or `PRESERVE' operations." loading="lazy"></a><figcaption><em><strong>Figure 6.</strong> Representative VIGOR-his samples and their complete local editing instructions. Each sample contains a temporal cross-view quadruplet of co-located earlier/recent satellite images and street-view panoramas. From top to bottom, the examples cover no change (two locations), building changes, road changes, and combined building and road changes. The instructions organize the panorama by viewing direction and specify region-level `MODIFY' or `PRESERVE' operations.</em></figcaption></figure>
+</section>
+<section class="section wrap" id="method"><h2>CrossTimeEdit</h2>
+<div class="prose"><p>CrossTimeEdit formulates historical street-view generation as local image editing. A recent street view constrains viewpoint and unchanged appearance, while a satellite-derived instruction specifies the earlier states of changed regions. Earlier street views provide supervision and evaluation targets, but are not generation inputs.</p></div>
+<div class="method-steps"><article><span class="stage-label">01 / Supervised initialization</span><h3>Learn editing and preservation</h3><p>We train LoRA adapters on FLUX.2 [Klein] 4B using VIGOR-his. Changed samples teach historical editing, while no-change samples provide identity supervision for content preservation.</p></article>
+<article><span class="stage-label">02 / Three-criterion rewards</span><h3>Assess complementary requirements</h3><p>Instruction Alignment (IA), Background Preservation (BP), and Quality and Physical Plausibility (QP) provide distinct RL reward dimensions and street-view editing evaluation metrics.</p></article>
+<article><span class="stage-label">03 / Online reinforcement learning</span><h3>Optimize multiple rewards</h3><p>Flow-GRPO updates the SFT-initialized LoRA policy using VLM-scored candidates. GDPO normalizes each reward dimension independently before aggregation to account for their unequal variability.</p></article></div></section>
+<section class="section wrap" id="results"><h2>Results</h2>
+<div class="table-block" id="table-2"><p class="table-caption" id="table-2-caption"><em><strong>Table 2.</strong> Quantitative comparison with general image editing models on VIGOR-his.</em></p><div class="table-scroll" role="region" aria-labelledby="table-2-caption" tabindex="0"><table><thead><tr><th rowspan="2" scope="col">Model</th><th colspan="4" scope="colgroup">Image Similarity Metrics</th><th colspan="4" scope="colgroup">VLM-Based Evaluation</th></tr><tr><th scope="col">PSNR ↑</th><th scope="col">SSIM ↑</th><th scope="col">LPIPS ↓</th><th scope="col">SD ↑</th><th scope="col">IA ↑</th><th scope="col">BP ↑</th><th scope="col">QP ↑</th><th scope="col">Overall ↑</th></tr></thead><tbody><tr class="group"><th colspan="9">Closed-source Models</th></tr><tr><th scope="row">Nano Banana 2 Lite</th><td>12.494</td><td>0.430</td><td>0.549</td><td>18.541</td><td>8.146</td><td>9.161</td><td>7.552</td><td>8.302</td></tr>
+<tr><th scope="row">Qwen-Image-3.0-Pro</th><td>12.722</td><td>0.456</td><td>0.528</td><td>19.108</td><td>7.475</td><td>9.207</td><td>7.662</td><td>8.042</td></tr>
+<tr><th scope="row">GPT-Image-2</th><td>12.427</td><td>0.425</td><td>0.533</td><td>18.369</td><td>8.123</td><td>9.633</td><td>8.143</td><td>8.581</td></tr>
+<tr class="group"><th colspan="9">Open-source Models</th></tr><tr><th scope="row">FLUX.2 [Klein] 4B</th><td>12.215</td><td>0.422</td><td>0.550</td><td>18.545</td><td>5.960</td><td>8.008</td><td>6.861</td><td>6.800</td></tr>
+<tr><th scope="row">FLUX.2 [Klein] 9B</th><td>12.134</td><td>0.405</td><td>0.557</td><td>18.137</td><td>6.913</td><td><strong>8.351</strong></td><td>7.239</td><td>7.426</td></tr>
+<tr><th scope="row">OmniGen2</th><td>11.885</td><td>0.398</td><td>0.552</td><td>18.030</td><td>3.741</td><td>6.338</td><td>5.231</td><td>4.893</td></tr>
+<tr><th scope="row">LongCat-Image-Edit</th><td>12.366</td><td>0.445</td><td>0.565</td><td><strong>18.836</strong></td><td>6.851</td><td>8.347</td><td>7.090</td><td>7.360</td></tr>
+<tr class="ours"><th scope="row"><strong>CrossTimeEdit</strong></th><td><strong>12.589</strong></td><td><strong>0.463</strong></td><td><strong>0.530</strong></td><td>18.705</td><td><strong>7.950</strong></td><td>8.264</td><td><strong>7.631</strong></td><td><strong>7.964</strong></td></tr>
+</tbody></table></div></div>
+<div class="table-block" id="table-3"><p class="table-caption" id="table-3-caption"><em><strong>Table 3.</strong> Quantitative comparison with cross-view generation models on VIGOR-his.</em></p><div class="table-scroll" role="region" aria-labelledby="table-3-caption" tabindex="0"><table><thead><tr><th rowspan="2" scope="col">Model</th><th colspan="4" scope="colgroup">Image Similarity Metrics</th><th colspan="4" scope="colgroup">VLM-Based Evaluation</th></tr><tr><th scope="col">PSNR ↑</th><th scope="col">SSIM ↑</th><th scope="col">LPIPS ↓</th><th scope="col">SD ↑</th><th scope="col">CV-C ↑</th><th scope="col">CV-VR ↑</th><th scope="col">CV-PQ ↑</th><th scope="col">Overall ↑</th></tr></thead><tbody><tr><th scope="row">Sat2Density</th><td><strong>14.685</strong></td><td><strong>0.532</strong></td><td>0.634</td><td><strong>20.040</strong></td><td>2.048</td><td>1.973</td><td>2.006</td><td>2.015</td></tr>
+<tr><th scope="row">ControlS2S</th><td>14.119</td><td>0.519</td><td>0.657</td><td>20.015</td><td>2.027</td><td>2.180</td><td>2.071</td><td>2.084</td></tr>
+<tr><th scope="row">ControlNet</th><td>12.142</td><td>0.344</td><td>0.680</td><td>17.885</td><td>1.119</td><td>2.118</td><td>2.404</td><td>1.740</td></tr>
+<tr class="ours"><th scope="row"><strong>CrossTimeEdit</strong></th><td>12.589</td><td>0.463</td><td><strong>0.530</strong></td><td>18.705</td><td><strong>3.005</strong></td><td><strong>3.980</strong></td><td><strong>3.998</strong></td><td><strong>3.546</strong></td></tr>
+</tbody></table></div></div>
+<div class="table-block compact-table" id="table-4"><p class="table-caption" id="table-4-caption"><em><strong>Table 4.</strong> Ablations of CrossTimeEdit under the same VLM protocol.</em></p><div class="table-scroll" role="region" aria-labelledby="table-4-caption" tabindex="0"><table><thead><tr><th scope="col">Method</th><th scope="col">IA ↑</th><th scope="col">BP ↑</th><th scope="col">QP ↑</th><th scope="col">Overall ↑</th></tr></thead><tbody><tr><th scope="row">Baseline</th><td>5.960</td><td>8.008</td><td>6.861</td><td>6.800</td></tr>
+<tr><th scope="row">w/o RL</th><td>6.919</td><td>6.698</td><td>6.543</td><td>6.759</td></tr>
+<tr><th scope="row">w/o SFT</th><td>6.085</td><td>8.112</td><td>6.886</td><td>6.893</td></tr>
+<tr><th scope="row">w/o GT</th><td>7.938</td><td>7.356</td><td>7.508</td><td>7.656</td></tr>
+<tr><th scope="row">w/o DGN</th><td><strong>8.148</strong></td><td>7.433</td><td>7.432</td><td>7.755</td></tr>
+<tr class="ours"><th scope="row"><strong>Full</strong></th><td>7.950</td><td><strong>8.264</strong></td><td><strong>7.631</strong></td><td><strong>7.964</strong></td></tr>
+</tbody></table></div></div>
+<figure id="figure-3"><a href="assets/figure3.webp" target="_blank" rel="noopener" aria-label="Open Figure 3 at full resolution"><img width="3000" height="2618" src="assets/figure3.webp" alt="Qualitative comparison on five VIGOR-his cases. For readability, the satellite-based instructions shown in the figure are simplified for visualization." loading="lazy"></a><figcaption><em><strong>Figure 3.</strong> Qualitative comparison on five VIGOR-his cases. For readability, the satellite-based instructions shown in the figure are simplified for visualization.</em></figcaption></figure>
+<figure id="figure-7"><a href="assets/figure7.webp" target="_blank" rel="noopener" aria-label="Open Figure 7 at full resolution"><img width="3000" height="2206" src="assets/figure7.webp" alt="Qualitative ablation comparison on three matched locations. Each row shows earlier and recent satellite images, the recent street view, the earlier street-view target, and outputs from the Baseline, w/o SFT, w/o GT, w/o DGN, w/o RL, and Full variants. For readability, the satellite-based instructions shown in the figure are simplified for visualization." loading="lazy"></a><figcaption><em><strong>Figure 7.</strong> Qualitative ablation comparison on three matched locations. Each row shows earlier and recent satellite images, the recent street view, the earlier street-view target, and outputs from the Baseline, w/o SFT, w/o GT, w/o DGN, w/o RL, and Full variants. For readability, the satellite-based instructions shown in the figure are simplified for visualization.</em></figcaption></figure>
+<figure id="figure-8"><a href="assets/figure8.webp" target="_blank" rel="noopener" aria-label="Open Figure 8 at full resolution"><img width="3000" height="1068" src="assets/figure8.webp" alt="Qualitative comparison with cross-view generation models. Each row shows an earlier satellite image, outputs from Sat2Density and ControlS2S, the CrossTimeEdit output, and the corresponding earlier street-view ground truth." loading="lazy"></a><figcaption><em><strong>Figure 8.</strong> Qualitative comparison with cross-view generation models. Each row shows an earlier satellite image, outputs from Sat2Density and ControlS2S, the CrossTimeEdit output, and the corresponding earlier street-view ground truth.</em></figcaption></figure>
+</section>
+<section class="section wrap" id="resources"><h2>Resources</h2><div class="resources"><a href="https://github.com/LuHanwen67/CrossTimeEdit-release"><strong>Code</strong><span>GitHub release</span></a><div><strong>Model weights</strong><span>Hugging Face, coming soon</span></div><div><strong>VIGOR-his metadata</strong><span>Hugging Face, coming soon</span></div></div></section>
+<section class="section wrap" id="citation"><h2>Citation</h2><pre><code>@misc{lu2026crosstimeedit,
   title  = {CrossTimeEdit: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation},
   author = {Lu, Hanwen and He, Jun and Yang, Mingjia and Wei, Hao and Huang, Jinhao and Lin, Yi and Zhang, Xiang},
   year   = {2026},
   note   = {arXiv preprint}
-}</code></pre></div>
-    </section>
-  </main>
-
-  <footer class="footer wrap"><span>CrossTimeEdit</span><span>Sun Yat-sen University · 2026</span></footer>
+}</code></pre></section>
+</main><footer class="wrap"><em>CrossTimeEdit</em><span>Sun Yat-sen University · 2026</span></footer>
 </body>
 </html>

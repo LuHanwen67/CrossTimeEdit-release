@@ -16,7 +16,8 @@ h1 { font-size:72px; line-height:1.12; margin:0 0 24px; font-weight:800; }
 h1 em { color:#245577; }
 .subtitle { max-width:1010px; margin:0 auto 26px; font-size:29px; line-height:1.45; }
 .authors { margin:0 auto; max-width:1030px; font-size:18px; line-height:1.9; }
-.affiliation { margin:8px 0; font-size:17px; color:var(--green); }
+.authors span { display:inline-block; margin:0 8px; white-space:nowrap; }
+.affiliation.notes { margin:8px 0; }
 .notes { margin:0; color:var(--muted); font-size:13px; }
 sup { font-size:.7em; }
 .actions { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:25px; }

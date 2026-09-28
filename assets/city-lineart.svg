@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="320" viewBox="0 0 560 320" fill="none">
+<!-- Building paths adapted from Tabler Icons: https://github.com/tabler/tabler-icons
+MIT License
+Copyright (c) 2020-2026 Paweł Kuna
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<defs>
+  <g id="neighborhood" stroke-linecap="round" stroke-linejoin="round" stroke-width=".65">
+    <path d="M8 9l5 5v7h-5v-4m0 4h-5v-7l5-5m1 1v-6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17h-8"/>
+    <path d="M13 7v.01M17 7v.01M17 11v.01M17 15v.01"/>
+  </g>
+  <g id="tower" stroke-linecap="round" stroke-linejoin="round" stroke-width=".65">
+    <path d="M3 21h18M5 21v-14l8-4v18M19 21v-10l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
+  </g>
+</defs>
+<g stroke="#648998">
+  <use href="#neighborhood" transform="translate(24 28) scale(3.8)"/>
+  <use href="#tower" transform="translate(115 7) scale(4.8)"/>
+  <use href="#neighborhood" transform="translate(226 32) scale(3.6)"/>
+  <path d="M30 117h300m-280 12h50m32 0h66m30 0h54" stroke-width="1.5" stroke-linecap="round"/>
+</g>
+<g stroke="#6a9687">
+  <use href="#tower" transform="translate(280 176) scale(4.3)"/>
+  <use href="#neighborhood" transform="translate(382 187) scale(3.8)"/>
+  <path d="M277 277h213m-193 12h50m28 0h66" stroke-width="1.5" stroke-linecap="round"/>
+</g>
+</svg>

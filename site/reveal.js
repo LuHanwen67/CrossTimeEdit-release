@@ -43,8 +43,8 @@
       requestAnimationFrame(() => entry.target.classList.remove('is-resetting'));
     });
   }, {
-    threshold: 0.08,
-    rootMargin: `-${topOffset}px 0px -7% 0px`
+    threshold: 0.01,
+    rootMargin: `-${topOffset}px 0px 0px 0px`
   });
 
   elements.forEach((element) => observer.observe(element));

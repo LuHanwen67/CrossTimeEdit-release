@@ -62,8 +62,15 @@ data/rl/streetview_change_gt/
 The CrossTimeEdit LoRA and VIGOR-his metadata are released separately:
 
 ```text
-https://huggingface.co/CrossTimeEdit/CrossTimeEdit-LoRA
-https://huggingface.co/datasets/CrossTimeEdit/VIGOR-his-metadata
+https://huggingface.co/LuHanwen/CrossTimeEdit-LoRA
+https://huggingface.co/datasets/LuHanwen/VIGOR-his-metadata
+```
+
+Download the released weights and metadata with:
+
+```bash
+hf download LuHanwen/CrossTimeEdit-LoRA crosstimeedit.safetensors --local-dir weights
+hf download LuHanwen/VIGOR-his-metadata --repo-type dataset --local-dir data
 ```
 
 Google Maps and Street View imagery is not redistributed.

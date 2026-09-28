@@ -1,8 +1,8 @@
 <h1 align="center"><em>CrossTimeEdit</em><br><sub>A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation</sub></h1>
 
 <p align="center">
-Hanwen Lu*, Jun He*, Mingjia Yang, Hao Wei, Jinhao Huang, Yi Lin, and Xiang Zhang<sup>&dagger;</sup><br>
-Sun Yat-sen University<br>
+Hanwen Lu<sup>1*</sup> &nbsp; Jun He<sup>1*</sup> &nbsp; Mingjia Yang<sup>1</sup> &nbsp; Hao Wei<sup>1</sup> &nbsp; Jinhao Huang<sup>1</sup> &nbsp; Yi Lin<sup>1</sup> &nbsp; Xiang Zhang<sup>1&dagger;</sup><br>
+<sub><sup>1</sup> Sun Yat-sen University</sub><br>
 <sub>* Equal contribution &nbsp; &dagger; Corresponding author</sub>
 </p>
 

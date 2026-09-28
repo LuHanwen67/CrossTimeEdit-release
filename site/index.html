@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CrossTimeEdit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top">CrossTimeEdit</a>
+    <nav aria-label="Primary navigation">
+      <a href="#method">Method</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#results">Results</a>
+      <a href="#citation">Citation</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <p class="eyebrow">Historical street-view generation</p>
+      <h1>CrossTimeEdit</h1>
+      <p class="subtitle">A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation</p>
+      <p class="authors"><strong>Hanwen Lu</strong><sup>*</sup>, Jun He<sup>*</sup>, Mingjia Yang, Hao Wei, Jinhao Huang, Yi Lin, and Xiang Zhang<sup>†</sup></p>
+      <p class="affiliation"><sup>1</sup> Sun Yat-sen University</p>
+      <p class="notes"><sup>*</sup> Equal contribution &nbsp;&nbsp; <sup>†</sup> Corresponding author</p>
+      <div class="actions">
+        <a class="button primary" href="https://arxiv.org/" aria-label="arXiv preprint coming soon">ArXiv <span>↗</span></a>
+        <a class="button" href="https://github.com/LuHanwen67/CrossTimeEdit-release">Code <span>↗</span></a>
+        <a class="button" href="#resources">Resources <span>↓</span></a>
+      </div>
+    </section>
+
+    <section class="visual wrap">
+      <img src="assets/teaser.png" alt="Overview of the VIGOR-his dataset and CrossTimeEdit">
+      <p class="caption">VIGOR-his pairs earlier and recent cross-view observations and provides structured change annotations for historical street-view generation.</p>
+    </section>
+
+    <section class="section wrap" id="abstract">
+      <div class="section-label">01 / Abstract</div>
+      <div class="section-body prose">
+        <p>Historical street-view imagery records urban evolution, but uneven coverage leaves substantial gaps in historical records. Generating plausible past appearances requires restoring changed structures while preserving persistent scene content.</p>
+        <p>We construct <strong>VIGOR-his</strong>, a decade-spanning cross-view dataset containing 43,653 location-level quadruplets across 11 cities on three continents. Based on VIGOR-his, we propose <strong>CrossTimeEdit</strong>, a model that reformulates historical street-view generation as editing, using recent street views to constrain viewpoint and unchanged appearance and temporal satellite differences as change evidence.</p>
+        <p>CrossTimeEdit improves overall performance across three street-view editing criteria by 17.12% over the pretrained baseline, ranks first among evaluated open-source image editing models, and outperforms cross-view generation models in scene consistency, visual realism, and perceptual quality.</p>
+      </div>
+    </section>
+
+    <section class="section wrap" id="method">
+      <div class="section-label">02 / Method</div>
+      <div class="section-body grid-3">
+        <article><span class="number">01</span><h2>Edit with recent views</h2><p>Recent street views provide a visual reference that constrains viewpoint and persistent scene appearance.</p></article>
+        <article><span class="number">02</span><h2>Describe temporal change</h2><p>Satellite differences provide change evidence and local editing instructions for the earlier scene.</p></article>
+        <article><span class="number">03</span><h2>Optimize three criteria</h2><p>Instruction Alignment, Background Preservation, and Quality and Physical Plausibility guide training and evaluation.</p></article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="dataset">
+      <div class="section-label">03 / Dataset</div>
+      <div class="section-body dataset-panel">
+        <div><p class="metric">43,653</p><p>location-level quadruplets</p></div>
+        <div><p class="metric">11</p><p>cities</p></div>
+        <div><p class="metric">3</p><p>continents</p></div>
+        <div><p class="metric">~10 years</p><p>temporal span</p></div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="results">
+      <div class="section-label">04 / Results</div>
+      <div class="section-body result-list">
+        <div><strong>17.12%</strong><span>overall improvement over the pretrained FLUX.2 [Klein] 4B baseline</span></div>
+        <div><strong>IA / QP</strong><span>highest performance among the evaluated open-source image editing models</span></div>
+        <div><strong>CV-C / CV-VR / CV-PQ</strong><span>stronger scene consistency, visual realism, and perceptual quality than cross-view generation models</span></div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="resources">
+      <div class="section-label">05 / Resources</div>
+      <div class="section-body resources">
+        <a href="https://github.com/LuHanwen67/CrossTimeEdit-release"><span>Code</span><small>GitHub release</small></a>
+        <a href="#"><span>Model weights</span><small>Hugging Face, coming soon</small></a>
+        <a href="#"><span>VIGOR-his metadata</span><small>Hugging Face, coming soon</small></a>
+        <a href="https://arxiv.org/"><span>Paper</span><small>arXiv, coming soon</small></a>
+      </div>
+    </section>
+
+    <section class="section wrap" id="citation">
+      <div class="section-label">06 / Citation</div>
+      <div class="section-body citation"><pre><code>@misc{lu2026crosstimeedit,
+  title  = {CrossTimeEdit: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation},
+  author = {Lu, Hanwen and He, Jun and Yang, Mingjia and Wei, Hao and Huang, Jinhao and Lin, Yi and Zhang, Xiang},
+  year   = {2026},
+  note   = {arXiv preprint}
+}</code></pre></div>
+    </section>
+  </main>
+
+  <footer class="footer wrap"><span>CrossTimeEdit</span><span>Sun Yat-sen University · 2026</span></footer>
+</body>
+</html>

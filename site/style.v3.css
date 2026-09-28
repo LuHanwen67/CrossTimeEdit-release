@@ -21,15 +21,17 @@ sup { font-size:.7em; }
 .button { padding:8px 20px; border:1px solid var(--line); border-radius:5px; font-size:15px; line-height:1.5; }
 .button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
 .unavailable { color:var(--muted); background:#f7f8fa; }
-.section { padding:46px 0 62px; border-bottom:1px solid var(--line); }
+.section { display:block; min-width:0; padding:46px 0 62px; border-bottom:1px solid var(--line); }
 .section h2 { text-align:center; font-size:38px; line-height:1.25; font-weight:800; margin:0 0 30px; }
 .prose { max-width:1000px; margin-inline:auto; }
 .prose p { margin:0 0 26px; text-align:justify; }
-figure { margin:42px 0; }
+figure { display:block; width:100%; min-width:0; margin:42px 0; }
 figure img { display:block; width:100%; height:auto; background:#fff; }
 figure a { display:block; cursor:zoom-in; }
 figcaption,.table-caption { color:#454e59; font-size:15px; line-height:1.65; text-align:left; }
-figcaption { margin-top:15px; }
+figcaption { display:block; width:100%; margin-top:15px; overflow-wrap:break-word; }
+.pdf-table { margin:38px auto 52px; }
+.pdf-table img { width:100%; height:auto; }
 .table-caption { margin:0 0 12px; }
 .table-block { margin:38px 0 52px; }
 .table-scroll { width:100%; overflow-x:auto; }

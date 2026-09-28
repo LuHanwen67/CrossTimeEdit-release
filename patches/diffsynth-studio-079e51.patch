@@ -1,0 +1,322 @@
+diff --git a/diffsynth/diffusion/parsers.py b/diffsynth/diffusion/parsers.py
+index b8c6c6a..8db94ff 100644
+--- a/diffsynth/diffusion/parsers.py
++++ b/diffsynth/diffusion/parsers.py
+@@ -4,6 +4,7 @@ import argparse
+ def add_dataset_base_config(parser: argparse.ArgumentParser):
+     parser.add_argument("--dataset_base_path", type=str, default="", required=True, help="Base path of the dataset.")
+     parser.add_argument("--dataset_metadata_path", type=str, default=None, help="Path to the metadata file of the dataset.")
++    parser.add_argument("--val_metadata_path", type=str, default=None, help="Path to validation metadata file.")
+     parser.add_argument("--dataset_repeat", type=int, default=1, help="Number of times to repeat the dataset per epoch.")
+     parser.add_argument("--dataset_num_workers", type=int, default=0, help="Number of workers for data loading.")
+     parser.add_argument("--data_file_keys", type=str, default="image,video", help="Data file keys in the metadata. Comma-separated.")
+@@ -36,6 +37,9 @@ def add_training_config(parser: argparse.ArgumentParser):
+     parser.add_argument("--trainable_models", type=str, default=None, help="Models to train, e.g., dit, vae, text_encoder.")
+     parser.add_argument("--find_unused_parameters", default=False, action="store_true", help="Whether to find unused parameters in DDP.")
+     parser.add_argument("--weight_decay", type=float, default=0.01, help="Weight decay.")
++    parser.add_argument("--max_grad_norm", type=float, default=None, help="Max gradient norm for clipping.")
++    parser.add_argument("--warmup_steps", type=int, default=0, help="Number of warmup steps for LR scheduler.")
++    parser.add_argument("--lr_scheduler", type=str, default="constant", help="LR scheduler type: constant or cosine.")
+     parser.add_argument("--task", type=str, default="sft", required=False, help="Task type.")
+     return parser
+ 
+@@ -57,7 +61,12 @@ def add_lora_config(parser: argparse.ArgumentParser):
+ def add_gradient_config(parser: argparse.ArgumentParser):
+     parser.add_argument("--use_gradient_checkpointing", default=False, action="store_true", help="Whether to use gradient checkpointing.")
+     parser.add_argument("--use_gradient_checkpointing_offload", default=False, action="store_true", help="Whether to offload gradient checkpointing to CPU memory.")
++    parser.add_argument("--use_8bit_adam", default=False, action="store_true", help="Use 8-bit Adam optimizer from bitsandbytes.")
+     parser.add_argument("--gradient_accumulation_steps", type=int, default=1, help="Gradient accumulation steps.")
++    parser.add_argument("--lr_reset", default=False, action="store_true", help="On resume: skip optimizer/scheduler state, start with current LR config.")
++    parser.add_argument("--lr_decay_ratio", type=float, default=0.15, help="WSD: fraction of remaining steps spent in decay phase.")
++    parser.add_argument("--min_lr_ratio", type=float, default=0.2, help="WSD: final LR = min_lr_ratio * learning_rate.")
++    parser.add_argument("--lr_warmup_start_factor", type=float, default=0.6, help="WSD warmup: start LR = factor * learning_rate.")
+     return parser
+ 
+ def add_general_config(parser: argparse.ArgumentParser):
+diff --git a/diffsynth/diffusion/runner.py b/diffsynth/diffusion/runner.py
+index 7aca6ac..59d91bc 100644
+--- a/diffsynth/diffusion/runner.py
++++ b/diffsynth/diffusion/runner.py
+@@ -1,88 +1,242 @@
+-import os, torch
++import os, torch, json, glob
+ from tqdm import tqdm
+ from accelerate import Accelerator
+ from .training_module import DiffusionTrainingModule
++from diffsynth.core import UnifiedDataset
+ from .logger import ModelLogger
+ 
++try:
++    import wandb
++    WANDB_AVAILABLE = True
++except ImportError:
++    WANDB_AVAILABLE = False
+ 
+-def launch_training_task(
+-    accelerator: Accelerator,
+-    dataset: torch.utils.data.Dataset,
+-    model: DiffusionTrainingModule,
+-    model_logger: ModelLogger,
+-    learning_rate: float = 1e-5,
+-    weight_decay: float = 1e-2,
+-    num_workers: int = 1,
+-    save_steps: int = None,
+-    num_epochs: int = 1,
+-    args = None,
+-):
++WANDB_LOG_INTERVAL = 10
++
++
++def launch_training_task(accelerator, dataset, model, model_logger,
++                         learning_rate=1e-5, weight_decay=1e-2, num_workers=1,
++                         save_steps=None, num_epochs=1, args=None):
+     if args is not None:
+         learning_rate = args.learning_rate
+         weight_decay = args.weight_decay
+         num_workers = args.dataset_num_workers
+         save_steps = args.save_steps
+         num_epochs = args.num_epochs
+-    
+-    optimizer = torch.optim.AdamW(model.trainable_modules(), lr=learning_rate, weight_decay=weight_decay)
+-    scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
++        max_grad_norm = getattr(args, 'max_grad_norm', None)
++        warmup_steps = getattr(args, 'warmup_steps', 0)
++        lr_scheduler_type = getattr(args, 'lr_scheduler', 'constant')
++
++    use_8bit = getattr(args, 'use_8bit_adam', False) if args is not None else False
++    val_metadata_path = getattr(args, 'val_metadata_path', None) if args is not None else None
++    lr_reset = getattr(args, 'lr_reset', False) if args is not None else False
++    if use_8bit:
++        import bitsandbytes as bnb
++        optimizer = bnb.optim.AdamW8bit(model.trainable_modules(), lr=learning_rate, weight_decay=weight_decay)
++    else:
++        optimizer = torch.optim.AdamW(model.trainable_modules(), lr=learning_rate, weight_decay=weight_decay)
+     dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, collate_fn=lambda x: x[0], num_workers=num_workers)
++    val_dataloader = None
++    if val_metadata_path is not None:
++        val_dataset = UnifiedDataset(
++            base_path=os.path.dirname(val_metadata_path) if os.path.dirname(val_metadata_path) else ".",
++            metadata_path=val_metadata_path, data_file_keys=dataset.data_file_keys,
++            main_data_operator=dataset.main_data_operator)
++        val_dataloader = torch.utils.data.DataLoader(val_dataset, shuffle=False, collate_fn=lambda x: x[0], num_workers=2)
++    # Detect resume_epoch early (needed by wsd total-steps on resume)
++    ckpt_dir = os.path.join(model_logger.output_path, "checkpoints")
++    ckpt_files = sorted(glob.glob(os.path.join(ckpt_dir, "epoch-*")))
++    resume_epoch = 0
++    if ckpt_files:
++        resume_epoch = int(os.path.basename(ckpt_files[-1]).split("-")[1]) + 1
++
++    if lr_scheduler_type == 'cosine':
++        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs * len(dataloader) - warmup_steps)
++        if warmup_steps > 0:
++            from torch.optim.lr_scheduler import SequentialLR, LinearLR
++            warmup_sched = LinearLR(optimizer, start_factor=1e-3, end_factor=1.0, total_iters=warmup_steps)
++            scheduler = SequentialLR(optimizer, schedulers=[warmup_sched, scheduler], milestones=[warmup_steps])
++    elif lr_scheduler_type == 'wsd':
++        # Warmup-Stable-Decay. total steps = REMAINING epochs (resume-aware)
++        # so decay fires on Phase 2. If warmup_steps>0: warmup -> stable -> decay.
++        from torch.optim.lr_scheduler import SequentialLR, ConstantLR, CosineAnnealingLR, LinearLR
++        total_steps = max(1, (num_epochs - resume_epoch) * len(dataloader))
++        decay_ratio = getattr(args, 'lr_decay_ratio', 0.15)
++        min_lr_ratio = getattr(args, 'min_lr_ratio', 0.2)
++        eta_min = learning_rate * min_lr_ratio
++        if warmup_steps > 0:
++            warmup_start = getattr(args, 'lr_warmup_start_factor', 0.6)
++            warmup_sched = LinearLR(optimizer, start_factor=warmup_start, end_factor=1.0,
++                                    total_iters=warmup_steps)
++            rem_steps = max(1, total_steps - warmup_steps)
++            decay_steps = max(1, int(rem_steps * decay_ratio))
++            stable_steps = max(1, rem_steps - decay_steps)
++            stable_sched = ConstantLR(optimizer, factor=1.0)
++            decay_sched = CosineAnnealingLR(optimizer, T_max=decay_steps, eta_min=eta_min)
++            scheduler = SequentialLR(optimizer,
++                                     schedulers=[warmup_sched, stable_sched, decay_sched],
++                                     milestones=[warmup_steps, warmup_steps + stable_steps])
++        else:
++            decay_steps = max(1, int(total_steps * decay_ratio))
++            stable_steps = max(1, total_steps - decay_steps)
++            stable_sched = ConstantLR(optimizer, factor=1.0)
++            decay_sched = CosineAnnealingLR(optimizer, T_max=decay_steps, eta_min=eta_min)
++            scheduler = SequentialLR(optimizer, schedulers=[stable_sched, decay_sched],
++                                     milestones=[stable_steps])
++    elif warmup_steps > 0:
++        # warmup then constant LR (v3: constant schedule with linear warmup)
++        from torch.optim.lr_scheduler import SequentialLR, LinearLR, ConstantLR
++        warmup_sched = LinearLR(optimizer, start_factor=1e-3, end_factor=1.0, total_iters=warmup_steps)
++        const_sched = ConstantLR(optimizer, factor=1.0)
++        scheduler = SequentialLR(optimizer, schedulers=[warmup_sched, const_sched], milestones=[warmup_steps])
++    else:
++        scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
+     model.to(device=accelerator.device)
+     model, optimizer, dataloader, scheduler = accelerator.prepare(model, optimizer, dataloader, scheduler)
+     initialize_deepspeed_gradient_checkpointing(accelerator)
+-    for epoch_id in range(num_epochs):
+-        for data in tqdm(dataloader):
++
++    # === Resume from checkpoint ===
++    if ckpt_files:
++        latest_ckpt = ckpt_files[-1]
++        if accelerator.is_main_process:
++            print(f"[Resume] Found checkpoint epoch-{resume_epoch-1}, resuming at epoch {resume_epoch}")
++        # Load LoRA weights (92MB, CPU-safe, add prefix back)
++        import safetensors.torch as st
++        lora_path = os.path.join(model_logger.output_path, f"epoch-{resume_epoch-1}.safetensors")
++        if os.path.exists(lora_path):
++            state_dict = st.load_file(lora_path, device="cpu")
++            state_dict = {"pipe.dit." + k: v for k, v in state_dict.items()}
++            accelerator.unwrap_model(model).load_state_dict(state_dict, strict=False)
++            del state_dict
++            if accelerator.is_main_process:
++                print(f"[Resume] LoRA weights loaded from {lora_path}.")
++        elif accelerator.is_main_process:
++            print(f"[Resume] WARNING: LoRA {lora_path} NOT found — continuing from BASE weights!")
++        # Load optimizer state (m/v) — no map_location, stays on original GPU
++        # Skipped on lr_reset: optimizer must start from the new --learning_rate
++        if not lr_reset:
++            opt_path = os.path.join(model_logger.output_path, f"epoch-{resume_epoch-1}_optimizer.bin")
++            if os.path.exists(opt_path):
++                raw_opt = optimizer.optimizer if hasattr(optimizer, "optimizer") else optimizer
++                # map to each process's own device (optimizer.bin was saved only by rank 0)
++                raw_opt.load_state_dict(torch.load(opt_path, map_location=accelerator.device))
++                if accelerator.is_main_process:
++                    print(f"[Resume] Optimizer state loaded from {opt_path}.")
++        # Load scheduler state from accelerator checkpoint (always saved by save_state)
++        # Skipped on lr_reset: scheduler rebuilt with the current LR config (warmup off).
++        if not lr_reset:
++            sched_path = os.path.join(latest_ckpt, "scheduler.bin")
++            if os.path.exists(sched_path):
++                scheduler.load_state_dict(torch.load(sched_path, map_location="cpu"))
++                if accelerator.is_main_process:
++                    print(f"[Resume] Scheduler state loaded from {sched_path}.")
++        if lr_reset and accelerator.is_main_process:
++            print("[Resume] lr_reset: optimizer/scheduler state skipped; using current LR config.")
++        if accelerator.is_main_process:
++            if resume_epoch >= num_epochs:
++                print(f"[Resume] WARNING: resume_epoch={resume_epoch} >= num_epochs={num_epochs}. "
++                      f"Training loop will be EMPTY. Delete {ckpt_dir} (or output_path) to start fresh.")
++            print(f"[Resume] Ready. Starting from epoch {resume_epoch}.")
++
++    if WANDB_AVAILABLE and accelerator.is_main_process:
++        wandb.init(project="SatPanoEdit",
++            name=getattr(model_logger, "output_path", "FLUX-SFT").replace("\\", "/").split("/")[-1],
++            config={"learning_rate": learning_rate, "weight_decay": weight_decay,
++                    "num_epochs": num_epochs, "save_steps": save_steps}, resume="allow")
++        print(f"[wandb] Run initialized: {wandb.run.name}", flush=True)
++
++    global_step = 0
++    for epoch_id in range(resume_epoch, num_epochs):
++        loss_buffer = []; epoch_loss_sum = 0.0; epoch_steps = 0
++        for data in tqdm(dataloader, desc=f"Epoch {epoch_id}"):
+             with accelerator.accumulate(model):
+                 optimizer.zero_grad()
+-                if dataset.load_from_cache:
+-                    loss = model({}, inputs=data)
+-                else:
+-                    loss = model(data)
++                loss = model({}, inputs=data) if dataset.load_from_cache else model(data)
+                 accelerator.backward(loss)
++                if max_grad_norm is not None:
++                    accelerator.clip_grad_norm_(model.parameters(), max_grad_norm)
+                 optimizer.step()
+                 model_logger.on_step_end(accelerator, model, save_steps, loss=loss)
+                 scheduler.step()
++
++            losses = accelerator.gather(loss.detach().float()).cpu().tolist()
++            if isinstance(losses, float): losses = [losses]
++            if accelerator.is_main_process:
++                loss_buffer.extend(losses)
++                epoch_loss_sum += sum(losses); epoch_steps += len(losses); global_step += 1
++                loss_str = ",".join(f"{v:.6f}" for v in losses)
++                print(f"[Epoch {epoch_id}][Step {global_step}] losses=[{loss_str}]", flush=True)
++                if global_step % WANDB_LOG_INTERVAL == 0:
++                    n = WANDB_LOG_INTERVAL * len(losses)
++                    recent_avg = sum(loss_buffer[-n:]) / n if loss_buffer[-n:] else float("nan")
++                    if WANDB_AVAILABLE and wandb.run is not None:
++                        wandb.log({"train/loss": recent_avg, "train/epoch": epoch_id, "train/global_step": global_step}, step=global_step)
++                    print(f"\033[31m[Epoch {epoch_id}][Step {global_step}] avg_loss(last_{n})={recent_avg:.6f}\033[0m", flush=True)
++            else:
++                global_step += 1
++
++        if accelerator.is_main_process and epoch_steps > 0:
++            avg_loss = epoch_loss_sum / epoch_steps
++            print(f"\033[31m[Epoch {epoch_id}] epoch_avg_loss={avg_loss:.6f} (samples={epoch_steps})\033[0m", flush=True)
++            if WANDB_AVAILABLE and wandb.run is not None:
++                wandb.log({"train/epoch_avg_loss": avg_loss, "train/epoch": epoch_id}, step=global_step)
++
++        if val_dataloader is not None and accelerator.is_main_process:
++            model.eval(); val_loss_sum = 0.0; val_steps = 0
++            with torch.no_grad():
++                for val_data in val_dataloader:
++                    val_inputs = model.get_pipeline_inputs(val_data)
++                    val_inputs = model.transfer_data_to_device(val_inputs, accelerator.device, torch.bfloat16)
++                    val_loss = model(val_data, inputs=val_inputs)
++                    val_loss_sum += val_loss.float().mean().item(); val_steps += 1
++            val_avg = val_loss_sum / val_steps if val_steps > 0 else float('nan')
++            print(f"[Epoch {epoch_id}] val_avg_loss={val_avg:.6f}", flush=True)
++            if WANDB_AVAILABLE and wandb.run is not None:
++                wandb.log({"val/avg_loss": val_avg, "val/epoch": epoch_id}, step=global_step)
++            model.train()
++            accelerator.wait_for_everyone()
++
++        accelerator.wait_for_everyone()
+         if save_steps is None:
+             model_logger.on_epoch_end(accelerator, model, epoch_id)
++        state_dir = os.path.join(ckpt_dir, f"epoch-{epoch_id}")
++        accelerator.save_state(state_dir)
++        if accelerator.is_main_process:
++            print(f"[Checkpoint] Saved training state to {state_dir}")
++            # Save optimizer + scheduler state for LoRA resume
++            raw_opt = optimizer.optimizer if hasattr(optimizer, "optimizer") else optimizer
++            torch.save(raw_opt.state_dict(), os.path.join(model_logger.output_path, f"epoch-{epoch_id}_optimizer.bin"))
++            torch.save(scheduler.state_dict(), os.path.join(model_logger.output_path, f"epoch-{epoch_id}_scheduler.bin"))
++
+     model_logger.on_training_end(accelerator, model, save_steps)
++    if WANDB_AVAILABLE and accelerator.is_main_process:
++        wandb.finish()
+ 
+ 
+-def launch_data_process_task(
+-    accelerator: Accelerator,
+-    dataset: torch.utils.data.Dataset,
+-    model: DiffusionTrainingModule,
+-    model_logger: ModelLogger,
+-    num_workers: int = 8,
+-    args = None,
+-):
+-    if args is not None:
+-        num_workers = args.dataset_num_workers
+-        
++def launch_data_process_task(accelerator, dataset, model, model_logger, num_workers=8, args=None):
++    if args is not None: num_workers = args.dataset_num_workers
+     dataloader = torch.utils.data.DataLoader(dataset, shuffle=False, collate_fn=lambda x: x[0], num_workers=num_workers)
+     model.to(device=accelerator.device)
+     model, dataloader = accelerator.prepare(model, dataloader)
+-    
+     for data_id, data in enumerate(tqdm(dataloader)):
+         with accelerator.accumulate(model):
+             with torch.no_grad():
+                 folder = os.path.join(model_logger.output_path, str(accelerator.process_index))
+                 os.makedirs(folder, exist_ok=True)
+-                save_path = os.path.join(model_logger.output_path, str(accelerator.process_index), f"{data_id}.pth")
+                 data = model(data)
+-                torch.save(data, save_path)
++                torch.save(data, os.path.join(folder, f"{data_id}.pth"))
+ 
+ 
+-def initialize_deepspeed_gradient_checkpointing(accelerator: Accelerator):
++def initialize_deepspeed_gradient_checkpointing(accelerator):
+     if getattr(accelerator.state, "deepspeed_plugin", None) is not None:
+         ds_config = accelerator.state.deepspeed_plugin.deepspeed_config
+         if "activation_checkpointing" in ds_config:
+             import deepspeed
+             act_config = ds_config["activation_checkpointing"]
+             deepspeed.checkpointing.configure(
+-                mpu_=None, 
++                mpu_=None,
+                 partition_activations=act_config.get("partition_activations", False),
+                 checkpoint_in_cpu=act_config.get("cpu_checkpointing", False),
+-                contiguous_checkpointing=act_config.get("contiguous_memory_optimization", False)
+-            )
++                contiguous_checkpointing=act_config.get("contiguous_memory_optimization", False))
+         else:
+             print("Do not find activation_checkpointing config in deepspeed config, skip initializing deepspeed gradient checkpointing.")

@@ -20,7 +20,9 @@ Sun Yat-sen University<br>
 <a href="#citation">Citation</a>
 </p>
 
-## Abstract
+<a id="abstract"></a>
+
+## 📝 Abstract
 
 Historical street-view imagery records urban evolution, but uneven coverage
 leaves substantial gaps in historical records. Generating plausible past
@@ -50,7 +52,7 @@ visual realism, and perceptual quality.
 
 *VIGOR-his provides paired earlier and recent street and satellite views, cross-view consistency screening, geographic coverage across 11 cities on three continents, and structured change annotations for historical street-view generation.*
 
-## At a Glance
+## 🔎 At a Glance
 
 | VIGOR-his | CrossTimeEdit |
 | :--- | :--- |
@@ -59,7 +61,9 @@ visual realism, and perceptual quality.
 | Approximately **a decade** between observations | **IA, BP, and QP** rewards with GDPO-normalized Flow-GRPO |
 | Change categories, satellite descriptions, and local editing instructions | **17.12%** improvement over the pretrained baseline across the three editing criteria |
 
-## Resources
+<a id="resources"></a>
+
+## 📦 Resources
 
 | Resource | Release |
 | :--- | :--- |
@@ -69,9 +73,11 @@ visual realism, and perceptual quality.
 
 > Google Maps and Street View imagery is **not redistributed**. Image acquisition remains subject to the provider's terms and availability. The released LoRA requires the base model, which must be obtained separately under its applicable terms.
 
-## Quick Start
+<a id="quick-start"></a>
 
-### 1. Set up the environment
+## 🚀 Quick Start
+
+### ⚙️ 1. Set up the environment
 
 Use Linux, Python 3.10 or 3.11, and a CUDA-compatible PyTorch installation.
 
@@ -91,7 +97,7 @@ pip install -r environment/requirements-evaluation.txt
 pip install huggingface_hub
 ```
 
-### 2. Download the release
+### 📥 2. Download the release
 
 ```bash
 hf download LuHanwen/CrossTimeEdit-LoRA crosstimeedit.safetensors --local-dir weights
@@ -113,7 +119,7 @@ weights/
   crosstimeedit.safetensors
 ```
 
-### 3. Generate historical street views
+### 🖼️ 3. Generate historical street views
 
 Single-GPU inference:
 
@@ -129,7 +135,7 @@ python inference/generate.py \
 
 For multiple GPUs, run one process per GPU with the same `--world-size` and distinct `--gpu` and `--rank` values.
 
-### 4. Evaluate outputs
+### 📊 4. Evaluate outputs
 
 Set `GEMINI_API_KEY` in your environment, then run:
 
@@ -144,10 +150,12 @@ python evaluation/editing_vlm.py \
 
 The editing protocol evaluates **Instruction Alignment (IA)**, **Background Preservation (BP)**, and **Quality and Physical Plausibility (QP)**.
 
-## Training
+<a id="training"></a>
+
+## 🧠 Training
 
 <details>
-<summary><strong>Supervised fine-tuning</strong></summary>
+<summary><strong>🎯 Supervised fine-tuning</strong></summary>
 
 Prepare the SFT JSONL manifest for the patched DiffSynth-Studio training loader. The released split JSON files define split membership; they are not the SFT loader's JSONL input.
 
@@ -165,7 +173,7 @@ The launch scripts use four processes, LoRA rank 32, and 512 x 1024 panoramas.
 </details>
 
 <details>
-<summary><strong>Online reinforcement learning</strong></summary>
+<summary><strong>🔄 Online reinforcement learning</strong></summary>
 
 Prepare the SFT initialization and RL data at the paths in [the main configuration](configs/rl/main.yaml), or update the configuration to match your local layout.
 
@@ -185,7 +193,7 @@ The configuration uses Flow-GRPO with GDPO normalization and IA/BP/QP reward wei
 
 </details>
 
-## Repository Guide
+## 🗂️ Repository Guide
 
 | Path | Purpose |
 | :--- | :--- |
@@ -198,7 +206,9 @@ The configuration uses Flow-GRPO with GDPO normalization and IA/BP/QP reward wei
 | [`third_party/flow_factory/`](third_party/flow_factory/) | Main-experiment RL implementation |
 | [`site/`](site/) | Project-page source |
 
-## Citation
+<a id="citation"></a>
+
+## 📖 Citation
 
 ```bibtex
 @misc{lu2026crosstimeedit,

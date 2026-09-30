@@ -7,6 +7,7 @@ Hanwen Lu<sup>1,*</sup> &nbsp; Jun He<sup>1,*</sup> &nbsp; Mingjia Yang<sup>1</s
 </p>
 
 <p align="center">
+<a href="https://arxiv.org/abs/2609.36616"><img src="https://img.shields.io/badge/arXiv-2609.36616-b31b1b?style=flat-square" alt="arXiv paper"></a>
 <a href="https://luhanwen67.github.io/CrossTimeEdit-release/"><img src="https://img.shields.io/badge/Project-Page-246b96?style=flat-square" alt="Project page"></a>
 <a href="https://huggingface.co/LuHanwen/CrossTimeEdit-LoRA"><img src="https://img.shields.io/badge/Hugging_Face-Model-307c73?style=flat-square" alt="Model weights"></a>
 <a href="https://huggingface.co/datasets/LuHanwen/VIGOR-his-metadata"><img src="https://img.shields.io/badge/Hugging_Face-Dataset-96764d?style=flat-square" alt="Dataset metadata"></a>
@@ -67,6 +68,7 @@ visual realism, and perceptual quality.
 
 | Resource | Release |
 | :--- | :--- |
+| Paper | [arXiv:2609.36616](https://arxiv.org/abs/2609.36616) |
 | Project page | [Figures, tables, and method overview](https://luhanwen67.github.io/CrossTimeEdit-release/) |
 | Model weights | [CrossTimeEdit LoRA](https://huggingface.co/LuHanwen/CrossTimeEdit-LoRA), selected epoch-200 checkpoint |
 | Dataset metadata | [VIGOR-his](https://huggingface.co/datasets/LuHanwen/VIGOR-his-metadata), including panorama identifiers and experiment splits |
@@ -215,6 +217,9 @@ The configuration uses Flow-GRPO with GDPO normalization and IA/BP/QP reward wei
   title  = {CrossTimeEdit: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation},
   author = {Lu, Hanwen and He, Jun and Yang, Mingjia and Wei, Hao and Huang, Jinhao and Lin, Yi and Zhang, Xiang},
   year   = {2026},
-  note   = {arXiv preprint}
+  eprint = {2609.36616},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CV},
+  url    = {https://arxiv.org/abs/2609.36616}
 }
 ```

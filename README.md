@@ -213,13 +213,11 @@ The configuration uses Flow-GRPO with GDPO normalization and IA/BP/QP reward wei
 ## 📖 Citation
 
 ```bibtex
-@misc{lu2026crosstimeedit,
-  title  = {CrossTimeEdit: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation},
-  author = {Lu, Hanwen and He, Jun and Yang, Mingjia and Wei, Hao and Huang, Jinhao and Lin, Yi and Zhang, Xiang},
-  year   = {2026},
-  eprint = {2609.36616},
-  archivePrefix = {arXiv},
-  primaryClass = {cs.CV},
-  url    = {https://arxiv.org/abs/2609.36616}
+@article{lu2026crosstimeedit,
+  title   = {{CrossTimeEdit}: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation},
+  author  = {Lu, Hanwen and He, Jun and Yang, Mingjia and Wei, Hao and Huang, Jinhao and Lin, Yi and Zhang, Xiang},
+  journal = {arXiv preprint arXiv:2609.36616},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2609.36616}
 }
 ```
